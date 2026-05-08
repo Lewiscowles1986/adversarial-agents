@@ -1,0 +1,27 @@
+{
+  "llm_cli": "llm",
+  "hooks": {
+    "pre_router": [
+      {
+        "command": "echo 'Preparing to route...'",
+        "cwd": "."
+      }
+    ],
+    "post_router": [],
+    "pre_builder": [
+      {
+        "command": "echo 'Builder is starting up...'"
+      }
+    ],
+    "post_builder": [],
+    "pre_critic": [],
+    "post_critic": [],
+    "pre_judge": [],
+    "post_judge": [],
+    "finished": [
+      {
+        "command": "echo 'Pipeline completed. Cleaning up...'"
+      }
+    ]
+  }
+}
