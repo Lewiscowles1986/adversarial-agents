@@ -11,6 +11,7 @@ requires-python = ">=3.10"
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0.0",
+    "mutmut>=3.0.0",
 ]
 
 [build-system]
@@ -29,7 +30,16 @@ python = "^3.10"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
+mutmut = "^3.0.0"
 
 [tool.pytest.ini_options]
 testpaths = ["test"]
 pythonpath = ["."]
+
+[tool.mutmut]
+paths_to_mutate = ["hooks.py", "llm_interface.py", "llm_wrapper.py", "orchestrator.py"]
+backup = false
+runner = "pytest"
+tests_dir = ["test/"]
+dict_synonyms = ["Struct", "Data"]
+use_setproctitle = false

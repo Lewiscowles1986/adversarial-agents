@@ -46,8 +46,6 @@ poetry install --with dev
 poetry run pytest
 # Run the application
 poetry run python main.py "Your prompt"
-```
-
 ### Using `pip`
 ```bash
 # Create a virtual environment
@@ -59,6 +57,23 @@ pip install -r requirements.txt
 pytest
 # Run the application
 python main.py "Your prompt"
+```
+
+## Testing & Quality
+
+### Unit Tests
+We use `pytest` for unit testing.
+```bash
+uv run pytest
+```
+
+### Mutation Testing (Test Fitness)
+To evaluate the quality of our tests, we use `mutmut`. This introduces intentional bugs into the code to see if the tests catch (kill) them.
+```bash
+# Run mutation testing
+uv run mutmut run
+# View results summary
+uv run mutmut results
 ```
 
 > **Note**: `requirements.txt` is kept in sync with `pyproject.toml` for `pip` users. If you update `pyproject.toml`, regenerate it using:
