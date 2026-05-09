@@ -19,9 +19,52 @@ Between each phase, you can define commands to run. These commands can be execut
 
 ## Prerequisites
 
-- Python 3
+- Python 3.10+
 - An LLM CLI installed. By default, it uses Simon Willison's `llm` CLI (`pip install llm`). You can switch to `gemini` CLI in `config.json`.
 - Optional: Docker (if you want to run hooks in isolated containers).
+
+## Setup & Dependencies
+
+This project supports multiple Python environment managers. Choose the one you prefer:
+
+### Using `uv` (Recommended)
+`uv` is extremely fast and manages the environment for you.
+```bash
+# Install dependencies and sync environment
+uv sync --extra dev
+# Run tests
+uv run pytest
+# Run the application
+uv run python main.py "Your prompt"
+```
+
+### Using `poetry`
+```bash
+# Install dependencies
+poetry install --with dev
+# Run tests
+poetry run pytest
+# Run the application
+poetry run python main.py "Your prompt"
+```
+
+### Using `pip`
+```bash
+# Create a virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+# Install dependencies
+pip install -r requirements.txt
+# Run tests
+pytest
+# Run the application
+python main.py "Your prompt"
+```
+
+> **Note**: `requirements.txt` is kept in sync with `pyproject.toml` for `pip` users. If you update `pyproject.toml`, regenerate it using:
+> ```bash
+> uv pip compile pyproject.toml --extra dev --no-deps -o requirements.txt
+> ```
 
 ## Configuration (`config.json`)
 
