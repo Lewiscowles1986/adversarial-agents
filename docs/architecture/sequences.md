@@ -16,8 +16,8 @@ sequenceDiagram
     actor User
     participant Orch as Orchestrator
     participant Hook as HookExecutor
-    participant LLM as LLMWrapper (CLI)
     participant FS as Local Filesystem
+    participant LLM as LLMWrapper (CLI)
 
     User->>Orch: Run(prompt)
 
