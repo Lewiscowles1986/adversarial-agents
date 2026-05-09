@@ -2,9 +2,12 @@ import subprocess
 import json
 import sys
 import os
+from llm_interface import LLMInterface
 
-class LLMWrapper:
+class LLMWrapper(LLMInterface):
     def __init__(self, cli_type="llm"):
+        if cli_type not in ["llm", "gemini"]:
+             raise ValueError(f"Unknown CLI type: {cli_type}")
         self.cli_type = cli_type # "llm", "gemini", or custom
 
     def generate(self, system_prompt, user_prompt):
@@ -20,8 +23,6 @@ class LLMWrapper:
             # combined_prompt = f"INSTRUCTIONS:\n{system_prompt}\n\nPROMPT:\n{user_prompt}"
             # But here we rely on the GEMINI.md swap strategy.
             cmd = ["gemini", "-p", user_prompt, "--yolo"]
-        else:
-            raise ValueError(f"Unknown CLI type: {self.cli_type}")
 
         try:
             print(f"Calling LLM CLI: {self.cli_type}...")

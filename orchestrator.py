@@ -1,8 +1,10 @@
 import os
 import json
 import subprocess
+from typing import Optional
 from hooks import HookExecutor
 from llm_wrapper import LLMWrapper
+from llm_interface import LLMInterface
 
 DEFAULT_PROMPTS = {
     "builder": "You are an expert software builder. Provide a complete, functional implementation to the user's request. Focus on clean code, best practices, and accuracy. Provide ONLY the code/solution, without conversational filler.",
@@ -11,15 +13,18 @@ DEFAULT_PROMPTS = {
 }
 
 class Orchestrator:
-    def __init__(self, config_path="config.json", cli_override=None):
-        self.hook_executor = HookExecutor(config_path)
+    def __init__(self, config_path: str = "config.json", cli_override: Optional[str] = None, llm: Optional[LLMInterface] = None, hook_executor: Optional[HookExecutor] = None):
+        self.hook_executor = hook_executor if hook_executor else HookExecutor(config_path)
         self.config = {}
         if os.path.exists(config_path):
             with open(config_path, 'r') as f:
                 self.config = json.load(f)
         
-        cli_type = cli_override if cli_override else self.config.get("llm_cli", "llm")
-        self.llm = LLMWrapper(cli_type=cli_type)
+        if llm:
+            self.llm = llm
+        else:
+            cli_type = cli_override if cli_override else self.config.get("llm_cli", "llm")
+            self.llm = LLMWrapper(cli_type=cli_type)
         
         # In the future, this could be dynamic
         self.prompts = self.config.get("prompts", DEFAULT_PROMPTS)
@@ -33,7 +38,7 @@ class Orchestrator:
 
     def _swap_context(self, content):
         """Swaps GEMINI.md with the stage-specific content."""
-        if self.llm.cli_type != "gemini":
+        if getattr(self.llm, "cli_type", None) != "gemini":
             return
         
         # Backup strategy: if it exists, we just overwrite. 
@@ -43,7 +48,7 @@ class Orchestrator:
 
     def _restore_context(self):
         """Restores GEMINI.md to its original state using git."""
-        if self.llm.cli_type != "gemini":
+        if getattr(self.llm, "cli_type", None) != "gemini":
             return
             
         if os.path.exists("GEMINI.md"):

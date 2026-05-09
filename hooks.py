@@ -34,7 +34,7 @@ class HookExecutor:
 
         if use_docker:
             image = cmd_config.get("docker_image", "ubuntu:latest")
-            docker_cmd = ["docker", "run", "--rm", "-v", f"{cwd}:/workspace", "-w", "/workspace"]
+            docker_cmd = ["docker", "run", "--rm", "-v", f"{cwd}:/workspace", "-w", "/workspace", image]
             
             for k, v in cmd_config.get("env", {}).items():
                 docker_cmd.extend(["-e", f"{k}={v}"])
