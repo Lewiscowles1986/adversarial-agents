@@ -55,6 +55,9 @@ class HookExecutor:
             # Local execution
             shell = isinstance(cmd, str)
             
+            if "uid" in cmd_config or "gid" in cmd_config:
+                print(f"Warning: 'uid' and 'gid' are ignored for local execution for stability. Use 'use_docker: true' for identity switching.")
+
             print(f"Executing locally: {cmd}")
             # Note: We've removed preexec_fn (demote) because it is not fork-safe on macOS
             # and was causing segmentation faults during high-concurrency mutation testing.

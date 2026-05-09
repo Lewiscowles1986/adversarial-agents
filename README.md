@@ -14,8 +14,8 @@ The system takes a single user prompt and orchestrates a pipeline:
 7.  **Finished Hook**: Run commands after the entire pipeline finishes.
 
 Between each phase, you can define commands to run. These commands can be executed:
-- Locally (with optional `uid`, `gid`, `cwd`, and `env` controls).
-- Inside an isolated Docker container (`use_docker: true`).
+- Locally (with optional `cwd` and `env` controls).
+- Inside an isolated Docker container (`use_docker: true`, supporting `uid` and `gid` switching).
 
 ## Prerequisites
 
@@ -110,7 +110,7 @@ The `config.json` allows you to configure which LLM CLI to use and define hook c
 - `command` (string or array): The command to execute.
 - `cwd` (string): Working directory for the command.
 - `env` (object): Environment variables to pass.
-- `uid` / `gid` (int or string): User/Group to run as.
+- `uid` / `gid` (int or string): User/Group to run as. (**Note: Supported only when `use_docker: true`**; ignored locally for system stability).
 - `use_docker` (boolean): Run inside a docker container.
 - `docker_image` (string): Docker image to use if `use_docker` is true.
 
