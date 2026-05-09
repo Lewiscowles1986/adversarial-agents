@@ -53,13 +53,16 @@ class Orchestrator:
             
         if os.path.exists("GEMINI.md"):
             # Check if it was tracked/modified
-            res = subprocess.run(["git", "ls-files", "--error-unmatch", "GEMINI.md"], capture_output=True)
-            if res.returncode == 0:
-                # File is tracked, restore it
-                subprocess.run(["git", "checkout", "HEAD", "--", "GEMINI.md"])
-            else:
-                # File is not tracked, just remove it to avoid pollution
-                os.remove("GEMINI.md")
+            try:
+                res = subprocess.run(["git", "ls-files", "--error-unmatch", "GEMINI.md"], capture_output=True, timeout=10)
+                if res.returncode == 0:
+                    # File is tracked, restore it
+                    subprocess.run(["git", "checkout", "HEAD", "--", "GEMINI.md"], timeout=10)
+                else:
+                    # File is not tracked, just remove it to avoid pollution
+                    os.remove("GEMINI.md")
+            except subprocess.TimeoutExpired:
+                print("Warning: git command timed out during GEMINI.md restoration.")
 
     def run(self, user_prompt):
         print("Starting Adversarial AI Orchestration Pipeline...")

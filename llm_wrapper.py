@@ -26,8 +26,11 @@ class LLMWrapper(LLMInterface):
 
         try:
             print(f"Calling LLM CLI: {self.cli_type}...")
-            result = subprocess.run(cmd, capture_output=True, text=True, check=True, env=env)
+            result = subprocess.run(cmd, capture_output=True, text=True, check=True, env=env, timeout=120)
             return result.stdout.strip()
+        except subprocess.TimeoutExpired:
+            print(f"Error: LLM CLI '{self.cli_type}' timed out after 120 seconds.", file=sys.stderr)
+            sys.exit(1)
         except subprocess.CalledProcessError as e:
             print(f"Error calling LLM CLI:\nSTDOUT: {e.stdout}\nSTDERR: {e.stderr}", file=sys.stderr)
             sys.exit(1)

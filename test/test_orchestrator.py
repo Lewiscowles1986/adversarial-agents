@@ -5,6 +5,7 @@ from orchestrator import Orchestrator
 
 class TestOrchestrator(unittest.TestCase):
     def setUp(self):
+        """Set up a fresh Orchestrator with mocked LLM and Hooks for every test."""
         self.mock_llm = MagicMock()
         self.mock_hooks = MagicMock()
         self.orchestrator = Orchestrator(llm=self.mock_llm, hook_executor=self.mock_hooks)
@@ -15,6 +16,13 @@ class TestOrchestrator(unittest.TestCase):
     @patch("orchestrator.os.path.exists")
     @patch("orchestrator.subprocess.run")
     def test_run_pipeline(self, mock_run, mock_exists, mock_makedirs, mock_file, mock_remove):
+        """
+        Verify the complete orchestration pipeline:
+        1. Correct stage-specific prompts are sent to the LLM.
+        2. Context swapping (GEMINI.md) occurs for each stage.
+        3. All expected hooks are triggered.
+        4. Final artifacts are saved to disk.
+        """
         # Setup mock returns
         self.mock_llm.generate.side_effect = [
             "Builder Output Content",
@@ -53,14 +61,12 @@ class TestOrchestrator(unittest.TestCase):
         self.assertEqual(len(write_calls), 3)
         
         # Check first write content (Builder)
-        handle = mock_file()
-        builder_write = write_calls[0]
-        # We need to check what was written to the handle
         mock_file().write.assert_any_call(self.orchestrator.prompts["builder"])
         mock_file().write.assert_any_call(self.orchestrator.prompts["critic"])
         mock_file().write.assert_any_call(self.orchestrator.prompts["judge"])
 
     def test_route_exact_mapping(self):
+        """Verify that the router maps stages to the exact system prompts defined in configuration."""
         builder_sys, critic_sys, judge_sys = self.orchestrator.route("test prompt")
         self.assertEqual(builder_sys, self.orchestrator.prompts["builder"])
         self.assertEqual(critic_sys, self.orchestrator.prompts["critic"])

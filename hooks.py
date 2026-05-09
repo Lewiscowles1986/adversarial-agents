@@ -53,26 +53,11 @@ class HookExecutor:
             subprocess.run(docker_cmd, env=env)
         else:
             # Local execution
-            def demote(user_uid, user_gid):
-                def result():
-                    os.setgid(user_gid)
-                    os.setuid(user_uid)
-                return result
-
-            preexec_fn = None
-            if "uid" in cmd_config or "gid" in cmd_config:
-                uid = cmd_config.get("uid", os.getuid())
-                gid = cmd_config.get("gid", os.getgid())
-                
-                if isinstance(uid, str):
-                    uid = pwd.getpwnam(uid).pw_uid
-                if isinstance(gid, str):
-                    gid = grp.getgrnam(gid).gr_gid
-                    
-                if uid != os.getuid() or gid != os.getgid():
-                    preexec_fn = demote(uid, gid)
-
             shell = isinstance(cmd, str)
             
             print(f"Executing locally: {cmd}")
-            subprocess.run(cmd, env=env, cwd=cwd, shell=shell, preexec_fn=preexec_fn)
+            # Note: We've removed preexec_fn (demote) because it is not fork-safe on macOS
+            # and was causing segmentation faults during high-concurrency mutation testing.
+            # If UID/GID switching is required, it should be handled via 'sudo' or similar
+            # wrappers within the command string itself.
+            subprocess.run(cmd, env=env, cwd=cwd, shell=shell, timeout=300)
