@@ -12,7 +12,7 @@ C4Context
         Boundary(local_machine, "User's Local Machine") {
             System(orchestrator, "Adversarial AI Orchestrator", "Orchestrates Builder, Critic, and Judge agents to fulfill user requests.")
             System_Ext(llm_cli, "LLM CLI Tools", "Local binaries (e.g., 'llm', 'gemini') that interface with AI models.")
-            System_Ext(filesystem, "Local Filesystem", "Stores configuration, intermediate GEMINI.md context, and final artifacts.")
+            System_Ext(filesystem, "Local Filesystem", "Stores configuration, transient GEMINI.md context, and final artifacts.")
             System_Ext(docker, "Docker Engine", "Optional: Executes isolated hook commands in containers.")
             System_Ext(llm_provider_local, "LLM Provider (local model)", "Local AI services (e.g. GGUF models, Ollama, vLLM).")
         }
@@ -61,3 +61,4 @@ The primary persistence and communication layer.
 
 ### Docker Engine (External)
 An optional dependency used to provide environment isolation for hooks. This is specifically used when identity switching (`uid`/`gid`) is required or when a specific runtime (e.g., `node`, `python`) is needed for a hook without polluting the host system.
+pecific runtime (e.g., `node`, `python`) is needed for a hook without polluting the host system.

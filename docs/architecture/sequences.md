@@ -73,5 +73,5 @@ Acts as a stateless bridge to the Large Language Models. It is responsible for c
 
 ### Local Filesystem (The Shared Memory)
 Used for two critical purposes:
-1.  **Intermediate Context**: For certain LLM tools (like `gemini` CLI), the filesystem acts as a "long-term memory" via the `GEMINI.md` file.
+1.  **Ephemeral Context**: For certain LLM tools (like `gemini` CLI), the filesystem acts as a transient bridge via the `GEMINI.md` file. It is swapped in/out during each stage.
 2.  **Persistence**: Final results from all stages are saved as Markdown files in the `artifacts/` folder for review.
