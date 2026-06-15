@@ -29,12 +29,26 @@ class Orchestrator:
         # In the future, this could be dynamic
         self.prompts = self.config.get("prompts", DEFAULT_PROMPTS)
 
+    def _resolve_prompt(self, prompt: str) -> str:
+        """Resolves a prompt string, loading from a file if it starts with 'file://'."""
+        if isinstance(prompt, str) and prompt.startswith("file://"):
+            file_path = prompt[7:]
+            if os.path.exists(file_path):
+                with open(file_path, 'r') as f:
+                    return f.read().strip()
+            else:
+                print(f"Warning: Prompt file not found at {file_path}. Using literal string.")
+        return prompt
+
     def route(self, user_prompt):
         """
         Future routing logic. For now, we return the generic builder, critic, and judge system prompts.
         """
         print("Routing user prompt to Generic Builder, Critic, Judge...")
-        return self.prompts["builder"], self.prompts["critic"], self.prompts["judge"]
+        builder = self._resolve_prompt(self.prompts.get("builder", ""))
+        critic = self._resolve_prompt(self.prompts.get("critic", ""))
+        judge = self._resolve_prompt(self.prompts.get("judge", ""))
+        return builder, critic, judge
 
     def _swap_context(self, content):
         """Swaps GEMINI.md with the stage-specific content."""

@@ -41,7 +41,10 @@ C4Context
 The primary actor who interacts with the system via the command line. They provide the initial prompt and consume the final implementation.
 
 ### Adversarial AI Orchestrator (The System)
-The core Python application. It manages the lifecycle of a request by routing prompts through a three-stage adversarial pipeline (Builder -> Critic -> Judge). It is responsible for state management, hook execution, and artifact collection.
+The core Python application. It manages the lifecycle of a request by routing prompts through a multi-stage adversarial pipeline. 
+- **Current State**: Uses a three-stage fixed pipeline (Builder -> Critic -> Judge).
+- **Future Growth**: Designed to support **Dynamic Routing**, where a "Planner" agent generates a JSON plan to coordinate a variable number of specialized experts (e.g., Security Auditor, Performance Engineer, Documentation Specialist) from an available list of models.
+- **Responsibilities**: State management, ephemeral context switching, hook execution, and artifact collection.
 
 ### LLM CLI Tools (External)
 The system is designed to be agnostic of the specific LLM. It delegates the actual "thinking" to external CLI tools like Simon Willison's `llm` or the `gemini` CLI. This abstraction enables a **Hybrid LLM Strategy**:
