@@ -4,6 +4,13 @@ import sys
 import os
 from llm_interface import LLMInterface
 
+def get_timeout():
+    try:
+        return int(os.getenv("LLM_TIMEOUT", "120"))
+    except:
+        pass
+    return 120
+
 class LLMWrapper(LLMInterface):
     def __init__(self, cli_type="llm"):
         if cli_type not in ["llm", "gemini"]:
@@ -26,7 +33,7 @@ class LLMWrapper(LLMInterface):
 
         try:
             print(f"Calling LLM CLI: {self.cli_type}...")
-            result = subprocess.run(cmd, capture_output=True, text=True, check=True, env=env, timeout=120)
+            result = subprocess.run(cmd, capture_output=True, text=True, check=True, env=env, timeout=get_timeout())
             return result.stdout.strip()
         except subprocess.TimeoutExpired:
             print(f"Error: LLM CLI '{self.cli_type}' timed out after 120 seconds.", file=sys.stderr)
