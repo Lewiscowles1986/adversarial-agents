@@ -48,5 +48,18 @@ class TestHookExecutor(unittest.TestCase):
         executor = HookExecutor("non_existent.json")
         self.assertEqual(executor.hooks, {})
 
+    @patch("hooks.subprocess.run")
+    def test_run_hook_relative_cwd(self, mock_run):
+        """Verify that a relative 'cwd' in a hook is resolved relative to the config directory."""
+        executor = HookExecutor()
+        executor.config_dir = "/fake/config/dir"
+        executor.hooks = {"test_hook": [{"command": "test_cmd", "cwd": "subdir"}]}
+        
+        executor.run_hook("test_hook")
+        
+        mock_run.assert_called_once()
+        args, kwargs = mock_run.call_args
+        self.assertEqual(kwargs["cwd"], os.path.abspath("/fake/config/dir/subdir"))
+
 if __name__ == "__main__":
     unittest.main()
