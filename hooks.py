@@ -7,7 +7,9 @@ import json
 class HookExecutor:
     def __init__(self, config_path=None):
         self.hooks = {}
+        self.config_dir = os.getcwd()
         if config_path and os.path.exists(config_path):
+            self.config_dir = os.path.dirname(os.path.abspath(config_path))
             with open(config_path, 'r') as f:
                 self.hooks = json.load(f).get('hooks', {})
 
@@ -29,7 +31,10 @@ class HookExecutor:
         if "env" in cmd_config:
             env.update(cmd_config["env"])
 
-        cwd = cmd_config.get("cwd", os.getcwd())
+        cwd = cmd_config.get("cwd", ".")
+        if not os.path.isabs(cwd):
+            cwd = os.path.abspath(os.path.join(self.config_dir, cwd))
+        
         use_docker = cmd_config.get("use_docker", False)
 
         if use_docker:

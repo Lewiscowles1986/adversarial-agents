@@ -14,10 +14,13 @@ DEFAULT_PROMPTS = {
 
 class Orchestrator:
     def __init__(self, config_path: str = "config.json", cli_override: Optional[str] = None, llm: Optional[LLMInterface] = None, hook_executor: Optional[HookExecutor] = None):
-        self.hook_executor = hook_executor if hook_executor else HookExecutor(config_path)
+        self.config_path = os.path.abspath(config_path)
+        self.config_dir = os.path.dirname(self.config_path)
+        
+        self.hook_executor = hook_executor if hook_executor else HookExecutor(self.config_path)
         self.config = {}
-        if os.path.exists(config_path):
-            with open(config_path, 'r') as f:
+        if os.path.exists(self.config_path):
+            with open(self.config_path, 'r') as f:
                 self.config = json.load(f)
         
         if llm:
@@ -32,7 +35,11 @@ class Orchestrator:
     def _resolve_prompt(self, prompt: str) -> str:
         """Resolves a prompt string, loading from a file if it starts with 'file://'."""
         if isinstance(prompt, str) and prompt.startswith("file://"):
+            # Handle both file://path and file:///path (absolute)
             file_path = prompt[7:]
+            if not os.path.isabs(file_path):
+                file_path = os.path.join(self.config_dir, file_path)
+            
             if os.path.exists(file_path):
                 with open(file_path, 'r') as f:
                     return f.read().strip()
@@ -42,7 +49,7 @@ class Orchestrator:
 
     def route(self, user_prompt):
         """
-        Future routing logic. For now, we return the generic builder, critic, and judge system prompts.
+        Future routing logic. For now, we return the builder, critic, and judge system prompts.
         """
         print("Routing user prompt to Generic Builder, Critic, Judge...")
         builder = self._resolve_prompt(self.prompts.get("builder", ""))

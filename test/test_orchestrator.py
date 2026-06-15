@@ -8,7 +8,8 @@ class TestOrchestrator(unittest.TestCase):
         """Set up a fresh Orchestrator with mocked LLM and Hooks for every test."""
         self.mock_llm = MagicMock()
         self.mock_hooks = MagicMock()
-        self.orchestrator = Orchestrator(llm=self.mock_llm, hook_executor=self.mock_hooks)
+        # Use a non-existent config path to ensure isolation from the workspace config.json
+        self.orchestrator = Orchestrator(config_path="non_existent_config.json", llm=self.mock_llm, hook_executor=self.mock_hooks)
 
     @patch("orchestrator.os.remove")
     @patch("orchestrator.open", new_callable=mock_open)

@@ -1,5 +1,10 @@
 {
   "llm_cli": "llm",
+  "prompts": {
+    "builder": "file://prompts/builder.md",
+    "critic": "file://prompts/critic.md",
+    "judge": "file://prompts/judge.md"
+  },
   "hooks": {
     "pre_router": [
       {
