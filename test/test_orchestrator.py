@@ -73,5 +73,22 @@ class TestOrchestrator(unittest.TestCase):
         self.assertEqual(critic_sys, self.orchestrator.prompts["critic"])
         self.assertEqual(judge_sys, self.orchestrator.prompts["judge"])
 
+    @patch("orchestrator.os.path.exists")
+    @patch("orchestrator.open", new_callable=mock_open, read_data="Resolved Prompt Content")
+    def test_resolve_prompt_relative(self, mock_file, mock_exists):
+        """Verify that file:// prompts are resolved relative to the config directory."""
+        mock_exists.return_value = True
+        
+        # Manually set config_dir for testing
+        self.orchestrator.config_dir = "/fake/config/dir"
+        
+        resolved = self.orchestrator._resolve_prompt("file://prompts/builder.md")
+        
+        self.assertEqual(resolved, "Resolved Prompt Content")
+        # Verify it looked in the right place
+        expected_path = os.path.join("/fake/config/dir", "prompts/builder.md")
+        mock_exists.assert_called_with(expected_path)
+        mock_file.assert_called_with(expected_path, 'r')
+
 if __name__ == "__main__":
     unittest.main()
