@@ -1,3 +1,5 @@
 __pycache__/
 .venv/
 mutants/
+node_modules/
+dist/
