@@ -4,35 +4,41 @@ from llm_wrapper import LLMWrapper
 import subprocess
 import sys
 
+def make_popen_mock(stdout="", returncode=0):
+    mock_proc = MagicMock()
+    mock_proc.communicate.return_value = (stdout, "")
+    mock_proc.returncode = returncode
+    return mock_proc
+
 class TestLLMWrapper(unittest.TestCase):
     def test_llm_cli_call_precise(self):
         """Verify that the default LLM CLI (Simon Willison's 'llm') is called with correct arguments and a timeout."""
         wrapper = LLMWrapper(cli_type="llm")
-        with patch("subprocess.run") as mock_run:
-            mock_run.return_value = MagicMock(stdout="Generated content\n", returncode=0)
-            
+        mock_proc = make_popen_mock(stdout="Generated content\n")
+        with patch("subprocess.Popen", return_value=mock_proc) as mock_popen:
             result = wrapper.generate("SYSTEM", "USER")
-            
+
             self.assertEqual(result, "Generated content")
-            # Verify exact command list and timeout
-            mock_run.assert_called_once_with(
+            mock_popen.assert_called_once_with(
                 ["llm", "prompt", "-s", "SYSTEM", "USER"],
-                capture_output=True, text=True, check=True, env=unittest.mock.ANY, timeout=120
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                stdin=unittest.mock.ANY, text=True,
+                env=unittest.mock.ANY, preexec_fn=unittest.mock.ANY,
             )
 
     def test_gemini_cli_call_precise(self):
         """Verify that the 'gemini' CLI is called with the correct yolo and prompt flags and a timeout."""
         wrapper = LLMWrapper(cli_type="gemini")
-        with patch("subprocess.run") as mock_run:
-            mock_run.return_value = MagicMock(stdout="Gemini output\n", returncode=0)
-            
+        mock_proc = make_popen_mock(stdout="Gemini output\n")
+        with patch("subprocess.Popen", return_value=mock_proc) as mock_popen:
             result = wrapper.generate("SYSTEM", "USER")
-            
+
             self.assertEqual(result, "Gemini output")
-            # Verify exact command list for gemini and timeout
-            mock_run.assert_called_once_with(
+            mock_popen.assert_called_once_with(
                 ["gemini", "-p", "USER", "--yolo"],
-                capture_output=True, text=True, check=True, env=unittest.mock.ANY, timeout=120
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                stdin=unittest.mock.ANY, text=True,
+                env=unittest.mock.ANY, preexec_fn=unittest.mock.ANY,
             )
 
     def test_invalid_cli_type(self):
@@ -44,9 +50,9 @@ class TestLLMWrapper(unittest.TestCase):
     def test_cli_error(self, mock_exit):
         """Verify that a non-zero exit code from the LLM CLI causes the wrapper to print an error and exit."""
         wrapper = LLMWrapper(cli_type="llm")
-        with patch("subprocess.run") as mock_run:
-            mock_run.side_effect = subprocess.CalledProcessError(1, ["llm"], stderr="Error message")
-            
+        mock_proc = make_popen_mock(stdout="", returncode=1)
+        mock_proc.communicate.return_value = ("", "Error message")
+        with patch("subprocess.Popen", return_value=mock_proc):
             wrapper.generate("sys", "user")
             mock_exit.assert_called_with(1)
 

@@ -13,21 +13,22 @@ DEFAULT_PROMPTS = {
 }
 
 class Orchestrator:
-    def __init__(self, config_path: str = "config.json", cli_override: Optional[str] = None, llm: Optional[LLMInterface] = None, hook_executor: Optional[HookExecutor] = None):
+    def __init__(self, config_path: str = "config.json", cli_override: Optional[str] = None, model_override: Optional[str] = None, llm: Optional[LLMInterface] = None, hook_executor: Optional[HookExecutor] = None):
         self.config_path = os.path.abspath(config_path)
         self.config_dir = os.path.dirname(self.config_path)
-        
+
         self.hook_executor = hook_executor if hook_executor else HookExecutor(self.config_path)
         self.config = {}
         if os.path.exists(self.config_path):
             with open(self.config_path, 'r') as f:
                 self.config = json.load(f)
-        
+
         if llm:
             self.llm = llm
         else:
             cli_type = cli_override if cli_override else self.config.get("llm_cli", "llm")
-            self.llm = LLMWrapper(cli_type=cli_type)
+            model = model_override if model_override else self.config.get("llm_model")
+            self.llm = LLMWrapper(cli_type=cli_type, model=model)
         
         # In the future, this could be dynamic
         self.prompts = self.config.get("prompts", DEFAULT_PROMPTS)
