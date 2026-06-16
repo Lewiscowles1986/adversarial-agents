@@ -2,3 +2,5 @@ __pycache__/
 .venv/
 mutants/
 .claude/
+node_modules/
+dist/
