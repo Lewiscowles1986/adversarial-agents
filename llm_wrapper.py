@@ -13,7 +13,7 @@ def get_timeout():
 
 class LLMWrapper(LLMInterface):
     def __init__(self, cli_type="llm"):
-        if cli_type not in ["llm", "gemini"]:
+        if cli_type not in ["llm", "gemini", "claude"]:
              raise ValueError(f"Unknown CLI type: {cli_type}")
         self.cli_type = cli_type # "llm", "gemini", or custom
 
@@ -30,6 +30,8 @@ class LLMWrapper(LLMInterface):
             # combined_prompt = f"INSTRUCTIONS:\n{system_prompt}\n\nPROMPT:\n{user_prompt}"
             # But here we rely on the GEMINI.md swap strategy.
             cmd = ["gemini", "-p", user_prompt, "--yolo"]
+        elif self.cli_type == "claude":
+            cmd = ["claude", "-p", user_prompt, "--system-prompt", system_prompt, "--allow-dangerously-skip-permissions", "--dangerously-skip-permissions"]
 
         try:
             print(f"Calling LLM CLI: {self.cli_type}...")

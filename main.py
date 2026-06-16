@@ -6,7 +6,7 @@ def main():
     parser = argparse.ArgumentParser(description="Adversarial AI Orchestration System")
     parser.add_argument("prompt", help="The initial user prompt to kick off the process.")
     parser.add_argument("-c", "--config", default="config.json", help="Path to the configuration file (default: config.json)")
-    parser.add_argument("--llm-cli", choices=["llm", "gemini"], help="Override the LLM CLI tool (e.g., 'llm' or 'gemini')")
+    parser.add_argument("--llm-cli", choices=["llm", "gemini", "claude"], help="Override the LLM CLI tool (e.g., 'llm', 'claude' or 'gemini')")
     
     args = parser.parse_args()
 

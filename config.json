@@ -1,5 +1,5 @@
 {
-  "llm_cli": "llm",
+  "llm_cli": "claude",
   "prompts": {
     "builder": "file://prompts/builder.md",
     "critic": "file://prompts/critic.md",
