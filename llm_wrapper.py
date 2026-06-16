@@ -31,7 +31,7 @@ class LLMWrapper(LLMInterface):
             # But here we rely on the GEMINI.md swap strategy.
             cmd = ["gemini", "-p", user_prompt, "--yolo"]
         elif self.cli_type == "claude":
-            cmd = ["claude", "-p", user_prompt, "--system-prompt", system_prompt, "--allow-dangerously-skip-permissions", "--dangerously-skip-permissions"]
+            cmd = ["claude", "-p", user_prompt, "--system-prompt", system_prompt, "--allow-dangerously-skip-permissions", "--dangerously-skip-permissions", "--add-dir", "."]
 
         try:
             print(f"Calling LLM CLI: {self.cli_type}...")
